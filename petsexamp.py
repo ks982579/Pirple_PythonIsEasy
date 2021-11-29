@@ -38,8 +38,41 @@ class Pet:
     def setPlayful(self, newPlayful: bool) -> object:
         self.playful = newPlayful
         return
+# End Pet Class
 
-pet1 = Pet("Dave", 3, False, True)
-print(pet1.getName())
-pet1.setName("Steve")
-print(pet1.getName())
+class Dog(Pet):
+    def __init__(self, dName, dAge, dHunger, dPlayful, breed, favToy):
+        Pet.__init__(self, dName, dAge, dHunger, dPlayful)
+        self.breed = breed
+        self.favouriteToy = favToy
+
+Johny = Dog("Johny", 4, False, False, "unknown", "stick")
+print(Johny.getAge())
+
+class Cat(Pet):
+    def __init__(self, cName, cAge, cHunger, cPlayful, cSleeping):
+        Pet.__init__(self,cName,cAge,cHunger,cPlayful)
+        self.sleeping = cSleeping
+    def isAsleep(self):
+        if(self.sleeping):
+            msg = self.name+" is sleeping."
+        else:
+            msg = self.name+" is awake."
+        return msg
+Jerry = Cat("Jerry", 3, True, True, False)
+print(Jerry.isAsleep())
+
+class Human:
+    def __init__(self,name: str,pets: list = []):
+        self.name = name
+        self.pets = pets
+
+    def hasPets(self):
+        if(len(self.pets)>0):
+            return "yes"
+        else:
+            return "no"
+# End Human Class
+
+YourSelf = Human("Bruce", [Johny, Jerry])
+print(YourSelf.hasPets())
