@@ -1,10 +1,16 @@
 import random as r
+import time
 
-randint = r.randint(1,10)
+startTime = time.perf_counter()
+
+#from random import randint as rInt
 randArray = []
 x = 0
-while x < 100:
+while x < 1000:
     randArray.append(r.randint(1,10))
     x += 1
 #end while
-print(randArray)
+#print(r.choice(randArray))
+endTime = time.perf_counter()
+print(endTime-startTime)
+print(1/60)
