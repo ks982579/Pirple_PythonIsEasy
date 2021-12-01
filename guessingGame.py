@@ -15,3 +15,4 @@ while(gameOn):
     else:
         print("Too high")
 print("You guessed correctly in {} tries!".format(counter))
+# by Kevin Sullivan
