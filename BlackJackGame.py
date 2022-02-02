@@ -1,3 +1,4 @@
+from pickle import TRUE
 from random import shuffle
 
 def createDeck():
@@ -8,16 +9,17 @@ def createDeck():
             deck.append(str(card))
         for card in faceValues:
             deck.append(card)
+    shuffle(deck)
+    shuffle(deck)
     return deck
-cardDeck = createDeck()
-shuffle(cardDeck)
-shuffle(cardDeck)
+#End createDeck() function
 
 class Player:
     def __init__(self, hand = [], money = 100):
         self.hand = hand
         self.score = 0
         self.money = money
+        self.bet = 0
     def __str__(self): # allows us to call print(player)
         currentHand = ""
         for card in self.hand:
@@ -60,14 +62,50 @@ class Player:
         self.score = self.calcScore()
     # End play() function
 
-    def pay(self, amount):
+    def make_bet(self, amount):
         self.money -= amount
-    def win(self, amount):
-        self.money += amount
+        self.bet += amount
 
-# End All
-bobby = Player(hand=[4,"A"])
-bobby.hit("3")
-print(bobby)
-bobby.play([5,6])
-print(bobby)
+    def win(self, result):
+        if result:
+            if self.score == 21 and len(self.hand) == 2:
+                self.money += 2.5*self.bet
+            else:
+                self.money += 2*self.bet
+        self.bet = 0
+
+def printHouse(dealer: Player):
+    print("House: ", end=" ")
+    for card in range(len(dealer.hand)):
+        if card == 0:
+            print("-", end=" ")
+        elif card == len(dealer.hand)-1:
+            print(dealer.hand[card])
+        else:
+            print(dealer.hand[card], end=" ")
+
+
+cardDeck = createDeck()
+firstHand = [cardDeck.pop(), cardDeck.pop()]
+secondHand = [cardDeck.pop(), cardDeck.pop()]
+
+player1 = Player()
+player1.play(firstHand)
+house = Player()
+house.play(secondHand)
+
+print(player1)
+printHouse(house)
+
+while True:
+    action = input("Do you want another card? (y/n): ")
+    action = action.lower().strip()
+    if action == "y" or action == "yes":
+        player1.hit(cardDeck.pop())
+        print(player1)
+    else:
+        break
+    if player1.score > 21:
+        print("BUST")
+        break
+#End Loop
