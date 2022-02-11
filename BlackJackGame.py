@@ -1,4 +1,3 @@
-from pickle import TRUE
 from random import shuffle
 
 def createDeck():
@@ -17,7 +16,6 @@ def createDeck():
 class Player:
     def __init__(self, hand = [], money = 100):
         self.hand = hand
-        self.score = 0
         self.money = money
         self.bet = 0
     def __str__(self): # allows us to call print(player)
@@ -26,6 +24,10 @@ class Player:
             currentHand += str(card) + " "
         finalStatus = currentHand + "Score: " + str(self.score)
         return finalStatus
+    def __getScore(self):
+        return self.calcScore()
+    score = property(__getScore)
+
     def calcScore(self): #Recalc and set score
         faceCards = {
             "A":11,
@@ -54,12 +56,10 @@ class Player:
 
     def hit(self, card):
         self.hand.append(card)
-        self.score = self.calcScore()
     # End hit() method
 
     def play(self, newHand):
         self.hand = newHand
-        self.score = self.calcScore()
     # End play() function
 
     def make_bet(self, amount):
@@ -73,6 +73,15 @@ class Player:
             else:
                 self.money += 2*self.bet
         self.bet = 0
+    def draw(self):
+        self.money += self.bet
+        self.bet = 0
+
+    def hasBlackJack(self):
+        if self.score == 21 and len(self.hand) == 2:
+            return True
+        else:
+            return False
 
 def printHouse(dealer: Player):
     print("House: ", end=" ")
@@ -86,26 +95,70 @@ def printHouse(dealer: Player):
 
 
 cardDeck = createDeck()
-firstHand = [cardDeck.pop(), cardDeck.pop()]
-secondHand = [cardDeck.pop(), cardDeck.pop()]
 
+
+# Instantiate Player(s) and dealer
 player1 = Player()
-player1.play(firstHand)
 house = Player()
-house.play(secondHand)
 
-print(player1)
-printHouse(house)
-
+## GAME LOOP
 while True:
-    action = input("Do you want another card? (y/n): ")
-    action = action.lower().strip()
-    if action == "y" or action == "yes":
-        player1.hit(cardDeck.pop())
-        print(player1)
+    # Betting ON
+    gettingBet = int(input("How much do you wager?: "))
+    if gettingBet == 0:
+        break
+    player1.make_bet(gettingBet)
+
+    if len(cardDeck) < 20:
+        cardDeck = createDeck()
+        print("shuffling new deck")
+    firstHand = [cardDeck.pop(), cardDeck.pop()]
+    secondHand = [cardDeck.pop(), cardDeck.pop()]
+
+    player1.play(firstHand)
+    house.play(secondHand)
+
+    print(player1)
+    printHouse(house)
+
+    if player1.hasBlackJack():
+        if house.hasBlackJack():
+            player1.draw()
+        else:
+            player1.win(True)
     else:
-        break
-    if player1.score > 21:
-        print("BUST")
-        break
-#End Loop
+        while True:
+            action = input("Do you want another card? (y/n): ")
+            action = action.lower().strip()
+            if action == "y" or action == "yes":
+                player1.hit(cardDeck.pop())
+                print(player1)
+            else:
+                break
+            if player1.score > 21:
+                print("BUST")
+                break
+        while (house.score < 16):
+            print(house)
+            house.hit(cardDeck.pop())
+        print(house)
+        def checks(player,dealer):
+            pScore = player.score
+            dScore = dealer.score
+            if pScore > 21:
+                if dScore > 21:
+                    player.draw() # Player and Dealer Bust
+                else:
+                    player.win(False) # Player Bust, dealer ok
+            elif pScore > dScore or dScore > 21:
+                player.win(True) #Dealer Bust or Player Wins
+            elif pScore == dScore:
+                player.draw() #Dealer and Player draw, neither Bust
+            else:
+                player.win(False) #Dealer wins, Player !bust
+        #End checks()
+        checks(player1,house)
+    print(player1.money)
+    #End Loop
+print("Your money: "+str(player1.money))
+print("Thanks for playing. See you again soon!")
