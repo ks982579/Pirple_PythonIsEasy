@@ -1,0 +1,17 @@
+# https://docs.python.org/3.9/library/functions.html#open
+# https://docs.python.org/3.9/glossary.html#term-file-object
+
+# help(_file) -> TextIOWrapper Object
+# f.read(self, size=-1, /)
+# f.readline(self, size=-1,/)
+# f.write(self, text, /) -> returns number of char written.
+# https://docs.python.org/3.9/library/io.html?highlight=textiowrapper#io.TextIOWrapper
+# https://docs.python.org/3.9/library/io.html?highlight=textiowrapper#io.IOBase
+# follow inheritance up to IOBase class
+
+with open("./news.txt", 'a') as f:
+   text_to_file = input("Enter in file?: ")
+   text_to_file += "\n"
+   f.write(text_to_file)
+
+print("Saved")
